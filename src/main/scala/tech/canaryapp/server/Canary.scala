@@ -6,7 +6,7 @@ package tech.canaryapp.server
 object Canary extends CanaryModule {
 
   def main(args: Array[String]): Unit = {
-
+    
   }
 
 }
