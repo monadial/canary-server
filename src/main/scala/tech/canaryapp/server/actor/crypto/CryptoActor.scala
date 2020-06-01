@@ -1,4 +1,4 @@
-package tech.canaryapp.actor.crypto
+package tech.canaryapp.server.actor.crypto
 
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>

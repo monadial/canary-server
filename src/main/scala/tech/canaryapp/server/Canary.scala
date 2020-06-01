@@ -1,4 +1,4 @@
-package tech.canaryapp
+package tech.canaryapp.server
 
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>
@@ -10,4 +10,3 @@ object Canary extends CanaryModule {
   }
 
 }
-v

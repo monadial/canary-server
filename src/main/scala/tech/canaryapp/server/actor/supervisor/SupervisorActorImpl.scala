@@ -1,4 +1,4 @@
-package tech.canaryapp.actor.supervisor
+package tech.canaryapp.server.actor.supervisor
 
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>

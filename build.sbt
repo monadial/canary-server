@@ -42,7 +42,7 @@ val commonSettings = Seq(
 lazy val root = (project in file("."))
   .settings(commonSettings: _*)
   .settings(
-    name := "viewer-api",
+    name := "canary-server",
     libraryDependencies ++= Seq(
       // Akka Core
       "com.typesafe.akka" %% "akka-actor-typed"         % akkaVersion,

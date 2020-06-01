@@ -1,4 +1,4 @@
-package tech.canaryapp.cryptography
+package tech.canaryapp.server.cryptography
 
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>
