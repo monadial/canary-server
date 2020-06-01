@@ -5,21 +5,23 @@ import tech.canaryapp.server.cryptography.{KeyPair, PrivateKey, PublicKey}
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>
  */
-trait EllipticCurve[PRK <: PrivateKey, PUK <: PublicKey] {
+trait EllipticCurve[PRK <: PrivateKey[_], PUK <: PublicKey[_]] {
 
   def generateKeyPair: KeyPair[PRK, PUK]
 
-  def decodePublicPoint(bytes: Array[Byte], offset: Int): PUK
+  def decodePublicPoint(bytes: Array[Byte], offset: Int): Either[Throwable, PUK]
 
   def decodePrivatePoint(bytes: Array[Byte]): PRK
 
+  def calculateArgument(privateKey: PRK, publicKey: PUK): Array[Byte]
+
   def calculateSignature(
-    ellipticCurvePrivateKey: PRK,
+    publicKey: PRK,
     message: Array[Byte]
   ): Array[Byte]
 
   def verifySignature(
-    ellipticCurvePublicKey: PUK,
+    publicKey: PUK,
     message: Array[Byte],
     signature: Array[Byte]
   ): Boolean
