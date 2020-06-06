@@ -1,23 +1,20 @@
-package tech.canaryapp.server.database
+package tech.canaryapp.server.transactor
 
-import cats.effect.Resource
+import cats.effect.{Blocker, Resource}
+import com.zaxxer.hikari.HikariConfig
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
-import doobie.util.log.LogHandler
 import monix.eval.Task
 import tech.canaryapp.server.config.Database
-import cats.effect.Blocker
-import cats.syntax.applicative._
-import com.zaxxer.hikari.HikariConfig
 
 /**
   * @author Tomas Mihalicka <tomas@mihalicka.com>
   */
 object DoobieHikariTransactor {
 
-  val defaultThreadPool = 32
+  type Transactor = HikariTransactor[Task]
 
-  lazy val instance: Database => Resource[Task, HikariTransactor[Task]] = { config =>
+  lazy val instance: Database => Resource[Task, Transactor] = { config =>
     lazy val hc = new HikariConfig { hikariConfig =>
       hikariConfig setDriverClassName config.driver
       hikariConfig setJdbcUrl config.connectionString

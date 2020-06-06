@@ -14,7 +14,7 @@ final case class Database(
 ) {
   // default vaules
   val defaultThreadPool = 32
-  val defaultAutoCommit = true
+  val defaultAutoCommit = false
 
   // We supports only Postgresql
   val driver = "org.postgresql.Driver"

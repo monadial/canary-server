@@ -13,7 +13,7 @@ import monix.execution.Scheduler
 import pureconfig._
 import tech.canaryapp.server.actor.supervisor.SupervisorActor
 import tech.canaryapp.server.config.CanaryConfig
-import tech.canaryapp.server.database.DoobieHikariTransactor
+import tech.canaryapp.server.transactor.DoobieHikariTransactor
 
 import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor}
 import scala.concurrent.duration.Duration
@@ -37,7 +37,7 @@ object Canary extends LazyLogging {
         }
       }
       .flatMap { config =>
-        val transactor = DoobieHikariTransactor.instance(config.database)
+        lazy val transactor = DoobieHikariTransactor.instance(config.database)
 
         transactor.use { tx =>
           Task
@@ -53,7 +53,7 @@ object Canary extends LazyLogging {
                   .addTask(CoordinatedShutdown.PhaseBeforeActorSystemTerminate, "stopActors") { () =>
                     implicit val scheduler: typed.Scheduler = system.scheduler
                     implicit val timeout: Timeout = Timeout(config.gracefulShutdownTimeout)
-                    system.ask(SupervisorActor.Stop)
+                    system ? SupervisorActor.Stop
                   }
 
                 implicit val ec: ExecutionContextExecutor =
@@ -63,7 +63,8 @@ object Canary extends LazyLogging {
                   .map(_ => ())
                   .onComplete(callback.apply)
 
-                Task.eval(CoordinatedShutdown(system.toClassic).run(CoordinatedShutdown.UnknownReason))
+                Task.eval(CoordinatedShutdown(system.toClassic)
+                  .run(CoordinatedShutdown.UnknownReason))
               }
             }(_ => Task.unit)
         }
