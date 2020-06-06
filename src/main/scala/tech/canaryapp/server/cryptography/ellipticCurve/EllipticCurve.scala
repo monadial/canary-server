@@ -7,7 +7,7 @@ import tech.canaryapp.server.cryptography.{KeyPair, PrivateKey, PublicKey, Share
  */
 trait EllipticCurve[T, PRK <: PrivateKey[T], PUK <: PublicKey[T]] {
 
-  type Bytes = Array[Byte];
+  type Bytes = Array[Byte]
 
   def generateKeyPair: KeyPair[PRK, PUK]
 

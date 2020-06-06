@@ -1,5 +1,7 @@
 package tech.canaryapp.server
 
+import java.util.Calendar
+
 import akka.actor.{CoordinatedShutdown, typed}
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.AskPattern._
@@ -27,6 +29,7 @@ object Canary extends LazyLogging {
   private lazy val rootConfig = ConfigFactory.load()
 
   def main(args: Array[String]): Unit = {
+    logger.info("Starting Canary Server!")
     val cancelableFuture = Task
       .fromTry {
         Try {
@@ -53,6 +56,7 @@ object Canary extends LazyLogging {
                   .addTask(CoordinatedShutdown.PhaseBeforeActorSystemTerminate, "stopActors") { () =>
                     implicit val scheduler: typed.Scheduler = system.scheduler
                     implicit val timeout: Timeout = Timeout(config.gracefulShutdownTimeout)
+                    logger.info("Stopping Canary Server!")
                     system ? SupervisorActor.Stop
                   }
 

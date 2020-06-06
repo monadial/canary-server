@@ -5,23 +5,18 @@ import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.scaladsl.adapter._
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.server.Directives._
+import doobie.hikari.HikariTransactor
+import doobie.implicits._
 import monix.eval.Task
 import monix.execution.Scheduler
-import tech.canaryapp.server.actor.server.ServerActor.Message
-import tech.canaryapp.server.actor.server.ServerActor.ServerBindingAvailable
-import tech.canaryapp.server.actor.server.ServerActor.Stop
+import tech.canaryapp.server.actor.server.ServerActor.{Message, ServerBindingAvailable, Stop}
 import tech.canaryapp.server.config.CanaryConfig
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import scala.util.Failure
-import scala.util.Success
-import akka.http.scaladsl.server.Directives._
-import cats.effect.Resource
-import tech.canaryapp.server.database._
-import doobie._
-import doobie.hikari.HikariTransactor
-import doobie.implicits._
+import scala.util.{Failure, Success}
+
 /**
   * @author Tomas Mihalicka <tomas@mihalicka.com>
   */
@@ -50,7 +45,7 @@ object ServerActorImpl {
 
             onComplete(task.runToFuture) {
               case Success(value) => complete(value.toString)
-              case Failure(ex) => complete(s"An error occurred: ${ex.getMessage}")
+              case Failure(ex)    => complete(s"An error occurred: ${ex.getMessage}")
             }
           }, interface, port)
         }
