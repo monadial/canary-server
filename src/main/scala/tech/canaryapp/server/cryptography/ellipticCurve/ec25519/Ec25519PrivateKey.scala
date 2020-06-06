@@ -10,5 +10,7 @@ import tech.canaryapp.server.cryptography.PrivateKey
 final case class Ec25519PrivateKey(private val ec25519PrivateKey: Array[Byte])
   extends PrivateKey(ec25519PrivateKey) {
 
-  override def asString: String = Base64.getEncoder.encodeToString(ec25519PrivateKey);
+  override def asString: String = Base64.getEncoder.encodeToString(ec25519PrivateKey)
+
+  override def toString: String = asString
 }

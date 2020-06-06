@@ -1,0 +1,28 @@
+version: '3.3'
+
+services:
+  postreges:
+    image: postgres
+    container_name: canary-postreges
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=canary
+      - POSTGRES_PASSWORD=Password1
+      - POSTGRES_DB=canary
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    container_name: canary-adminer
+    restart: unless-stopped
+    environment:
+      - ADMINER_DEFAULT_SYSTEM=postreges
+    ports:
+      - 5433:8080
+
+volumes:
+  database-data:
+    driver: local

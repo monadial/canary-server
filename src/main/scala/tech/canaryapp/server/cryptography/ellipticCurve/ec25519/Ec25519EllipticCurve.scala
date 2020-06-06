@@ -9,12 +9,12 @@ import tech.canaryapp.server.cryptography.ellipticCurve.EllipticCurve
 /**
   * @author Tomas Mihalicka <tomas@mihalicka.com>
   */
-final class Ec25519EllipticCurve(curve: Curve25519) extends EllipticCurve[Ec25519PrivateKey, Ec25519PublicKey] {
+final class Ec25519EllipticCurve(curve: Curve25519) extends EllipticCurve[Array[Byte], Ec25519PrivateKey, Ec25519PublicKey] {
 
   override def generateKeyPair: KeyPair[Ec25519PrivateKey, Ec25519PublicKey] = {
     val keyPair = curve.generateKeyPair();
 
-    KeyPair(Ec25519PrivateKey(keyPair.getPrivateKey), Ec25519PublicKey(keyPair.getPublicKey));
+    KeyPair(Ec25519PrivateKey(keyPair.getPrivateKey), Ec25519PublicKey(keyPair.getPublicKey))
   }
 
   override def decodePublicPoint(bytes: Array[Byte], offset: Int): Either[Throwable, Ec25519PublicKey] = {
@@ -27,7 +27,7 @@ final class Ec25519EllipticCurve(curve: Curve25519) extends EllipticCurve[Ec2551
     Right(Ec25519PublicKey(keyBytes))
   }
 
-  override def calculateArgument(privateKey: Ec25519PrivateKey, publicKey: Ec25519PublicKey): Array[Byte] =
+  override def calculateAgreement(privateKey: Ec25519PrivateKey, publicKey: Ec25519PublicKey): Array[Byte] =
     curve.calculateAgreement(publicKey.key, privateKey.key)
 
   override def decodePrivatePoint(bytes: Array[Byte]): Ec25519PrivateKey =

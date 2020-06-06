@@ -1,9 +1,13 @@
 package tech.canaryapp.server.config
 
+import scala.concurrent.duration.FiniteDuration
+
 /**
- * @author Tomas Mihalicka <tomas@mihalicka.com>
- */
+  * @author Tomas Mihalicka <tomas@mihalicka.com>
+  */
 final case class CanaryConfig(
-  httpServer: HttpServer,
-  cryptography: Cryptography
+    gracefulShutdownTimeout: FiniteDuration,
+    httpServer: HttpServer,
+    cryptography: Cryptography,
+    database: Database
 )

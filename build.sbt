@@ -1,5 +1,8 @@
 ThisBuild / scalaVersion := "2.13.2"
 ThisBuild / organization := "tech.canaryapp"
+ThisBuild / organizationName := "CanaryApp"
+
+ThisBuild / licenses += "AGPLv3" -> url("https://www.gnu.org/licenses/agpl-3.0.en.html")
 
 scalacOptions in ThisBuild ++= Seq(
   "-encoding",
@@ -24,6 +27,7 @@ val catsVersion = "2.1.1"
 val scalatestVersion = "3.1.1"
 val pureconfigVersion = "0.12.3"
 val akkaHttpCirce = "1.32.0"
+val doobieVersion = "0.9.0"
 
 val commonSettings = Seq(
   organization := "tech.canaryapp",
@@ -49,29 +53,45 @@ lazy val root = (project in file("."))
       "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
       "com.typesafe.akka" %% "akka-slf4j"               % akkaVersion,
       "com.typesafe.akka" %% "akka-stream"              % akkaVersion,
+
       // Akka Others
       "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
+
       // MacWire
       "com.softwaremill.macwire" %% "macros"     % macwireVersion % Provided,
       "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % Provided,
       "com.softwaremill.macwire" %% "util"       % macwireVersion,
       "com.softwaremill.macwire" %% "proxy"      % macwireVersion,
+
       // Circe
       "io.circe" %% "circe-core"    % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser"  % circeVersion,
       "de.heikoseeberger" %% "akka-http-circe" % akkaHttpCirce,
+
       // Monix
       "io.monix" %% "monix-eval"      % monixVersion,
       "io.monix" %% "monix-execution" % monixVersion,
+
       // Others
-      "ch.qos.logback"        % "logback-classic"           % logbackClassicVersion,
-      "org.typelevel"         %% "cats-core"                % catsVersion,
-      "org.scalatest"         %% "scalatest"                % scalatestVersion % Test,
-      "com.github.pureconfig" %% "pureconfig"               % pureconfigVersion,
+      "ch.qos.logback"              % "logback-classic"           % logbackClassicVersion,
+      "org.typelevel"               %% "cats-core"                % catsVersion,
+      "org.scalatest"               %% "scalatest"                % scalatestVersion % Test,
+      "com.github.pureconfig"       %% "pureconfig"               % pureconfigVersion,
+      "com.typesafe.scala-logging"  %% "scala-logging"            % "3.9.2",
+      "org.postgresql"              % "postgresql"                % "42.2.13",
+
+      // doobie
+      "org.tpolecat"          %% "doobie-core"              % doobieVersion,
+      "org.tpolecat"          %% "doobie-hikari"            % doobieVersion,
+      "org.tpolecat"          %% "doobie-postgres"          % doobieVersion,
       // Crypto Utils
       "org.whispersystems" % "curve25519-java"              % "0.5.0"
     )
   )
+
+PB.targets in Compile := Seq(
+  scalapb.gen() -> (sourceManaged in Compile).value / "scalapb"
+)
 
 

@@ -1,11 +1,13 @@
 package tech.canaryapp.server.cryptography.ellipticCurve
 
-import tech.canaryapp.server.cryptography.{KeyPair, PrivateKey, PublicKey}
+import tech.canaryapp.server.cryptography.{KeyPair, PrivateKey, PublicKey, SharedSecret}
 
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>
  */
-trait EllipticCurve[PRK <: PrivateKey[_], PUK <: PublicKey[_]] {
+trait EllipticCurve[T, PRK <: PrivateKey[T], PUK <: PublicKey[T]] {
+
+  type Bytes = Array[Byte];
 
   def generateKeyPair: KeyPair[PRK, PUK]
 
@@ -13,7 +15,7 @@ trait EllipticCurve[PRK <: PrivateKey[_], PUK <: PublicKey[_]] {
 
   def decodePrivatePoint(bytes: Array[Byte]): PRK
 
-  def calculateArgument(privateKey: PRK, publicKey: PUK): Array[Byte]
+  def calculateAgreement(privateKey: PRK, publicKey: PUK): Array[Byte]
 
   def calculateSignature(
     publicKey: PRK,

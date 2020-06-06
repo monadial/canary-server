@@ -10,5 +10,5 @@ import tech.canaryapp.server.cryptography.ellipticCurve.ec25519.Ec25519EllipticC
 trait CryptographyModule {
 
   lazy val ellipticCurve: Ec25519EllipticCurve =
-    Ec25519EllipticCurve.apply(Curve25519.getInstance(Curve25519.BEST))
+    Ec25519EllipticCurve(Curve25519.getInstance(Curve25519.BEST))
 }

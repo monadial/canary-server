@@ -12,5 +12,7 @@ final case class Ec25519PublicKey(private val ec25519PublicKey: Array[Byte]) ext
   override def compare(that: PublicKey[Array[Byte]]): Int =
     BigInt(ec25519PublicKey).compare(BigInt(that.key))
 
-  override def asString: String = Base64.getEncoder.encodeToString(ec25519PublicKey);
+  override def asString: String = Base64.getEncoder.encodeToString(ec25519PublicKey)
+
+  override def toString: String = asString
 }
