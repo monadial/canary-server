@@ -7,13 +7,17 @@ import tech.canaryapp.server.actor.supervisor.SupervisorActor.Message
 import tech.canaryapp.server.actor.supervisor.SupervisorActor.Stop
 import tech.canaryapp.server.config.CanaryConfig
 import tech.canaryapp.server.actor.server.ServerActor
+import tech.canaryapp.server.actor.cryptography.CryptographyActor
 
 /**
   * @author Tomas Mihalicka <tomas@mihalicka.com>
   */
 object SupervisorActorImpl {
 
-  def createActor(config: CanaryConfig, serverActorProvider: ServerActor.Provider): SupervisorActor.Provider =
+  def createActor(
+      config: CanaryConfig,
+      serverActorProvider: ServerActor.Provider
+  ): SupervisorActor.Provider =
     () =>
       Behaviors.setup { context =>
         // run server actor

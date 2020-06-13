@@ -9,5 +9,6 @@ final case class CanaryConfig(
     gracefulShutdownTimeout: FiniteDuration,
     httpServer: HttpServer,
     cryptography: Cryptography,
-    database: Database
+    database: Database,
+    twillio: Twillio
 )

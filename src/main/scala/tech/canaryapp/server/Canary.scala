@@ -1,7 +1,5 @@
 package tech.canaryapp.server
 
-import java.util.Calendar
-
 import akka.actor.{CoordinatedShutdown, typed}
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.AskPattern._
@@ -15,7 +13,7 @@ import monix.execution.Scheduler
 import pureconfig._
 import tech.canaryapp.server.actor.supervisor.SupervisorActor
 import tech.canaryapp.server.config.CanaryConfig
-import tech.canaryapp.server.transactor.DoobieHikariTransactor
+import tech.canaryapp.server.database.{DoobieHikariTransactor, DoobieLiquibaseMigration}
 
 import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor}
 import scala.concurrent.duration.Duration
@@ -40,10 +38,9 @@ object Canary extends LazyLogging {
         }
       }
       .flatMap { config =>
-        lazy val transactor = DoobieHikariTransactor.instance(config.database)
-
+        val transactor = DoobieHikariTransactor.instance(config.database)
         transactor.use { tx =>
-          Task
+          DoobieLiquibaseMigration.initialize(tx) >> Task
             .eval[CanaryModule](new CanaryModule {
               override val configuration: CanaryConfig = config
               override val transactor: HikariTransactor[Task] = tx

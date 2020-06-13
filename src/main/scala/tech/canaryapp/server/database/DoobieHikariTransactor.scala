@@ -1,4 +1,4 @@
-package tech.canaryapp.server.transactor
+package tech.canaryapp.server.database
 
 import cats.effect.{Blocker, Resource}
 import com.zaxxer.hikari.HikariConfig

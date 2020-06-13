@@ -6,23 +6,25 @@ import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.scaladsl.adapter._
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
-import doobie.hikari.HikariTransactor
-import doobie.implicits._
 import monix.eval.Task
 import monix.execution.Scheduler
-import tech.canaryapp.server.actor.server.ServerActor.{Message, ServerBindingAvailable, Stop}
+import tech.canaryapp.server.actor.server.ServerActor.Message
+import tech.canaryapp.server.actor.server.ServerActor.ServerBindingAvailable
+import tech.canaryapp.server.actor.server.ServerActor.Stop
+import tech.canaryapp.server.actor.server.http.Endpoint
 import tech.canaryapp.server.config.CanaryConfig
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import scala.util.{Failure, Success}
+import scala.util.Failure
+import scala.util.Success
 
 /**
   * @author Tomas Mihalicka <tomas@mihalicka.com>
   */
 object ServerActorImpl {
 
-  def createActor(config: CanaryConfig, tx: HikariTransactor[Task]): ServerActor.Provider =
+  def createActor(config: CanaryConfig, endpoints: List[Endpoint]): ServerActor.Provider =
     () =>
       Behaviors.setup { context =>
         // implicits
@@ -39,15 +41,11 @@ object ServerActorImpl {
         lazy val port = config.httpServer.port
 
         val serverBindingTask: Task[Http.ServerBinding] = Task.fromFuture {
-          Http(akkaActorSystem).bindAndHandle(get {
+          val routes = endpoints
+            .map(_.routes)
+            .reduce(_ ~ _)
 
-            val task = sql"""SELECT version();""".query[String].analysis.transact(tx)
-
-            onComplete(task.runToFuture) {
-              case Success(value) => complete(value.toString)
-              case Failure(ex)    => complete(s"An error occurred: ${ex.getMessage}")
-            }
-          }, interface, port)
+          Http(akkaActorSystem).bindAndHandle(routes, interface, port)
         }
 
         context.pipeToSelf(serverBindingTask.timeout(10 seconds).runToFuture) {

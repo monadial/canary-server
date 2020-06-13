@@ -1,14 +1,14 @@
-package tech.canaryapp.server.actor.crypto
+package tech.canaryapp.server.actor.sms
 
 import akka.actor.typed.Behavior
 
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>
  */
-object CryptoActor {
+object SmsActor {
 
   type Provider = () => Behavior[Message]
 
   sealed trait Message
-  final case object Stop extends Message
+  case class SendMessage()
 }

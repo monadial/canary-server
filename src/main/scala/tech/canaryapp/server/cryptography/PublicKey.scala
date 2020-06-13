@@ -3,9 +3,8 @@ package tech.canaryapp.server.cryptography
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>
  */
-abstract class PublicKey[T](val key: T) extends Ordered[PublicKey[T]] {
+final case class PublicKey(bytes: Array[Byte]) extends AnyVal with Comparable[PublicKey] {
+  override def toString: String = bytes.map(_.toChar).mkString
 
-  def serialize: T = key
-
-  def asString: String
+  override def compareTo(o: PublicKey): Int = BigInt(bytes).compare(BigInt(o.bytes))
 }

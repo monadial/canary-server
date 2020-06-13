@@ -28,6 +28,8 @@ val scalatestVersion = "3.1.1"
 val pureconfigVersion = "0.12.3"
 val akkaHttpCirce = "1.32.0"
 val doobieVersion = "0.9.0"
+val flywayVersion = "6.4.4"
+
 
 val commonSettings = Seq(
   organization := "tech.canaryapp",
@@ -80,11 +82,14 @@ lazy val root = (project in file("."))
       "com.github.pureconfig"       %% "pureconfig"               % pureconfigVersion,
       "com.typesafe.scala-logging"  %% "scala-logging"            % "3.9.2",
       "org.postgresql"              % "postgresql"                % "42.2.13",
+      "com.twilio.sdk"              % "twilio"                    % "7.17.0",
 
-      // doobie
+      // db
       "org.tpolecat"          %% "doobie-core"              % doobieVersion,
       "org.tpolecat"          %% "doobie-hikari"            % doobieVersion,
       "org.tpolecat"          %% "doobie-postgres"          % doobieVersion,
+      "org.flywaydb"          % "flyway-core"               % flywayVersion,
+
       // Crypto Utils
       "org.whispersystems" % "curve25519-java"              % "0.5.0"
     )
