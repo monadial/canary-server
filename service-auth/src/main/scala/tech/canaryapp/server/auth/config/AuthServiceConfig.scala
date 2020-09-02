@@ -1,10 +1,9 @@
 package tech.canaryapp.server.auth.config
 
-import tech.canaryapp.server.service.config.{KafkaConfig, ServiceConfig}
+import akka.kafka.{ConsumerSettings, ProducerSettings}
+import tech.canaryapp.server.service.config.ServiceConfig
 
 import scala.concurrent.duration.FiniteDuration
-import akka.kafka.ConsumerSettings
-import akka.kafka.ProducerSettings
 
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>

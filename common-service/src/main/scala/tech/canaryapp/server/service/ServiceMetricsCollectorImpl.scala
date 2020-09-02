@@ -2,8 +2,8 @@ package tech.canaryapp.server.service
 
 import java.lang.management.ManagementFactory
 
-import kamon.metric.Gauge
 import kamon.Kamon
+import kamon.metric.Gauge
 import monix.eval.Task
 import monix.execution.Cancelable
 

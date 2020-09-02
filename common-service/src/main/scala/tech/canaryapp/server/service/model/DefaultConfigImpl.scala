@@ -1,7 +1,8 @@
 package tech.canaryapp.server.service.model
 
-import tech.canaryapp.server.service.config.{Config, KafkaConfig, ServiceConfig, ServiceConfigFactory}
 import com.typesafe.config.{ConfigFactory, Config => TConfig}
+import tech.canaryapp.server.service.config.{Config, KafkaConfig}
+
 import scala.jdk.CollectionConverters._
 import scala.util.Try
 

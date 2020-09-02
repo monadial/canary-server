@@ -58,7 +58,6 @@ val commonSettings = Seq(
     case PathList("META-INF", _@_*) => MergeStrategy.discard
     case _ => MergeStrategy.deduplicate
   }
-
   //  wartremoverErrors ++= Warts.all
 )
 
@@ -68,6 +67,12 @@ lazy val root = (project in file("."))
   .aggregate(serviceAuth, serviceCrypto, serviceRing)
   .settings(commonSettings: _*)
   .settings(name := "canary", skip in publish := true)
+  .enablePlugins(SemVerPlugin)
+  .enablePlugins(BuildInfoPlugin)
+  .settings(
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "tech.canaryapp.server.model"
+  )
 
 lazy val commonUtil = (project in file("common-util"))
   .settings(

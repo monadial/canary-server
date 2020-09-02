@@ -1,11 +1,10 @@
 package tech.canaryapp.server.auth.actor.supervisor
 
 import akka.Done
+import akka.actor.typed.Terminated
 import akka.actor.typed.scaladsl.Behaviors
-import akka.actor.typed.{ActorRef, Behavior, Terminated}
-import monix.eval.Task
-import tech.canaryapp.server.auth.actor.supervisor.SupervisorActor.{Message, Provider, Stop}
 import tech.canaryapp.server.auth.actor.http.HttpServerActor
+import tech.canaryapp.server.auth.actor.supervisor.SupervisorActor.{Message, Provider, Stop}
 
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>

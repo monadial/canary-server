@@ -1,8 +1,9 @@
 package tech.canaryapp.server.util.patterns.config
 
+import java.util.{List => JList}
+
 import com.typesafe.config.Config
 
-import java.util.{List => JList}
 import scala.jdk.CollectionConverters._
 
 /**

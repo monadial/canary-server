@@ -7,7 +7,7 @@ import com.typesafe.scalalogging.LazyLogging
 import kamon.Kamon
 import monix.eval.Task
 import monix.execution.Scheduler
-import tech.canaryapp.server.service.config.{Config, ServiceConfig, ServiceConfigFactory}
+import tech.canaryapp.server.service.config.Config
 import tech.canaryapp.server.service.model._
 
 import scala.concurrent.Await

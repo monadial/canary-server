@@ -6,7 +6,6 @@ import tech.canaryapp.server.auth.actor.http.{HttpServerActor, HttpServerActorIm
 import tech.canaryapp.server.auth.actor.supervisor.{SupervisorActor, SupervisorActorImpl}
 import tech.canaryapp.server.auth.config.AuthServiceConfig
 import tech.canaryapp.server.auth.persistence.DoobieHikariTransactor.Transactor
-import tech.canaryapp.server.service.config.Config
 
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>

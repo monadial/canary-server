@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 import akka.kafka.{ConsumerSettings, ProducerSettings}
 import com.typesafe.config.{Config => TConfig}
 import org.apache.kafka.common.serialization.{ByteArrayDeserializer, ByteArraySerializer}
-import tech.canaryapp.server.service.config.{Config, ServiceConfigFactory}
+import tech.canaryapp.server.service.config.Config
 import tech.canaryapp.server.util.patterns.config.{Implicits => TConfigImplicits}
 
 import scala.concurrent.duration.FiniteDuration

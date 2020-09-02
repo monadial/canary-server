@@ -12,5 +12,6 @@ object NotificationService extends Service {
 
   override protected val serviceName: ServiceName = ServiceName("notification")
 
-  override protected def start(serviceConfig: Config): Task[Unit] = ???
+  override protected def start(serviceConfig: Config): Task[Unit] =
+    Task.now(Task.unit)
 }

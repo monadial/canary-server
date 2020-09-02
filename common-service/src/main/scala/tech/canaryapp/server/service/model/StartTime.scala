@@ -1,13 +1,9 @@
 package tech.canaryapp.server.service.model
 
-import java.time.Instant
+import java.time.temporal.ChronoUnit.{DAYS, HOURS, MINUTES, SECONDS}
 import java.time.temporal.TemporalUnit
-import java.time.temporal.ChronoUnit.SECONDS
-import java.time.temporal.ChronoUnit.MINUTES
-import java.time.temporal.ChronoUnit.HOURS
-import java.time.temporal.ChronoUnit.DAYS
+import java.time.{Instant, Duration => JDuration}
 import java.util.Date
-import java.time.{Duration => JDuration}
 
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>

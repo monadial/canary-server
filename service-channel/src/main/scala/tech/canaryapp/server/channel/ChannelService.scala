@@ -12,5 +12,6 @@ object ChannelService extends Service {
 
   override protected val serviceName: ServiceName = ServiceName("channel")
 
-  override protected def start(serviceConfig: Config): Task[Unit] = ???
+  override protected def start(serviceConfig: Config): Task[Unit] =
+    Task.now(Task.unit)
 }
