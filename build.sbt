@@ -46,8 +46,22 @@ val commonSettings = Seq(
       url = url("http://www.mihalicka.com")
     )
   ),
+  test in assembly := {},
+  assemblyJarName in assembly := "assembly.jar",
+  assemblyMergeStrategy in assembly := {
+    case x if x.endsWith(".conf") => MergeStrategy.concat
+    case x if x.endsWith("io.netty.versions.properties") => MergeStrategy.first
+    case x if x.endsWith("module-info.class") => MergeStrategy.first
+    case x if x.endsWith("LICENSE") => MergeStrategy.discard
+    case x if x.endsWith("NOTICE") => MergeStrategy.discard
+    case x if x.endsWith(".txt") => MergeStrategy.discard
+    case PathList("META-INF", _@_*) => MergeStrategy.discard
+    case _ => MergeStrategy.deduplicate
+  }
+
   //  wartremoverErrors ++= Warts.all
 )
+
 
 lazy val root = (project in file("."))
   .aggregate(commonModel, commonService, commonUtil)
@@ -113,8 +127,11 @@ lazy val serviceCrypto = (project in file("service-crypto"))
       "com.softwaremill.macwire" %% "proxy" % macwireVersion,
       // Monix
       "io.monix" %% "monix-eval" % monixVersion,
-      "io.monix" %% "monix-execution" % monixVersion
-    )
+      "io.monix" %% "monix-execution" % monixVersion,
+      // Kamon
+      "io.kamon" %% "kamon-bundle" % kamonVersion
+    ),
+    mainClass in assembly := Some("tech.canaryapp.server.crypto.CryptoService")
   )
 
 
@@ -133,27 +150,22 @@ lazy val serviceAuth = (project in file("service-auth"))
       "com.typesafe.akka" %% "akka-stream-kafka" % akkaStreamKafkaVersion,
       // Akka Others
       "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
-
       // MacWire
       "com.softwaremill.macwire" %% "macros" % macwireVersion % Provided,
       "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % Provided,
       "com.softwaremill.macwire" %% "util" % macwireVersion,
       "com.softwaremill.macwire" %% "proxy" % macwireVersion,
-
       // Monix
       "io.monix" %% "monix-eval" % monixVersion,
       "io.monix" %% "monix-execution" % monixVersion,
-
       // Doboie
       "org.tpolecat" %% "doobie-core" % doobieVersion,
       "org.tpolecat" %% "doobie-hikari" % doobieVersion,
       "org.tpolecat" %% "doobie-postgres" % doobieVersion,
-
       // Kamon
-      "io.kamon" %% "kamon-bundle" % kamonVersion,
-      "io.kamon" %% "kamon-akka-http" % kamonVersion,
-      "io.kamon" %% "kamon-akka" % kamonVersion
-    )
+      "io.kamon" %% "kamon-bundle" % kamonVersion
+    ),
+    mainClass in assembly := Some("tech.canaryapp.server.auth.AuthService")
   )
 
 // responsible for management of ring of trust
@@ -176,8 +188,11 @@ lazy val serviceRing = (project in file("service-ring"))
       "com.softwaremill.macwire" %% "proxy" % macwireVersion,
       // Monix
       "io.monix" %% "monix-eval" % monixVersion,
-      "io.monix" %% "monix-execution" % monixVersion
-    )
+      "io.monix" %% "monix-execution" % monixVersion,
+      // Kamon
+      "io.kamon" %% "kamon-bundle" % kamonVersion
+    ),
+    mainClass in assembly := Some("tech.canaryapp.server.ring.RingService")
   )
 
 // responsible for sending data back to client
@@ -185,7 +200,8 @@ lazy val serviceChannel = (project in file("service-channel"))
   .dependsOn(commonService, commonModel, commonUtil)
   .settings(commonSettings: _*)
   .settings(
-    name := "service-channel"
+    name := "service-channel",
+    mainClass in assembly := Some("tech.canaryapp.server.channel.ChannelService")
   )
 
 
