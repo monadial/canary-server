@@ -17,19 +17,23 @@ scalacOptions in ThisBuild ++= Seq(
   "-Ywarn-unused:imports"
 )
 
-val akkaVersion = "2.6.5"
+dependencyUpdatesFilter -= moduleFilter(organization = "org.scala-lang")
+
+val typesafeConfig = "1.4.0"
+val akkaVersion = "2.6.8"
 val akkaHttpVersion = "10.1.12"
-val macwireVersion = "2.3.3"
+val akkaStreamKafkaVersion = "2.0.4"
+val macwireVersion = "2.3.7"
 val circeVersion = "0.13.0"
-val monixVersion = "3.1.0"
+val monixVersion = "3.2.2"
 val logbackClassicVersion = "1.2.3"
 val catsVersion = "2.1.1"
-val scalatestVersion = "3.1.1"
-val pureconfigVersion = "0.12.3"
-val akkaHttpCirce = "1.32.0"
+val scalatestVersion = "3.2.0"
+val pureconfigVersion = "0.13.0"
+val akkaHttpCirce = "1.33.0"
 val doobieVersion = "0.9.0"
-val flywayVersion = "6.4.4"
-
+val flywayVersion = "6.5.3"
+val kamonVersion = "2.1.4"
 
 val commonSettings = Seq(
   organization := "tech.canaryapp",
@@ -46,57 +50,194 @@ val commonSettings = Seq(
 )
 
 lazy val root = (project in file("."))
+  .aggregate(commonModel, commonService, commonUtil)
+  .aggregate(serviceAuth, serviceCrypto, serviceRing)
+  .settings(commonSettings: _*)
+  .settings(name := "canary", skip in publish := true)
+
+lazy val commonUtil = (project in file("common-util"))
+  .settings(
+    name := "common-util",
+    libraryDependencies ++= Seq(
+      // Monix
+      "io.monix" %% "monix-eval" % monixVersion,
+      "io.monix" %% "monix-execution" % monixVersion,
+      // Others
+      "com.typesafe" % "config" % typesafeConfig
+    )
+  )
+
+lazy val commonModel = (project in file("common-model"))
+  .dependsOn(commonUtil)
   .settings(commonSettings: _*)
   .settings(
-    name := "canary-server",
-    libraryDependencies ++= Seq(
-      // Akka Core
-      "com.typesafe.akka" %% "akka-actor-typed"         % akkaVersion,
-      "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
-      "com.typesafe.akka" %% "akka-slf4j"               % akkaVersion,
-      "com.typesafe.akka" %% "akka-stream"              % akkaVersion,
+    name := "common-model"
+  )
 
+lazy val commonService = (project in file("common-service"))
+  .dependsOn(commonUtil)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "common-service",
+    libraryDependencies ++= Seq(
+      // Monix
+      "io.monix" %% "monix-eval" % monixVersion,
+      "io.monix" %% "monix-execution" % monixVersion,
+      // Kamon
+      "io.kamon" %% "kamon-bundle" % kamonVersion,
+      // Others
+      "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
+      "com.typesafe" % "config" % typesafeConfig
+    )
+  )
+
+
+
+lazy val serviceCrypto = (project in file("service-crypto"))
+  .dependsOn(commonService, commonModel, commonUtil)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "service-crypto",
+    libraryDependencies ++= Seq(
+      // Akka
+      "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-stream-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+      // MacWire
+      "com.softwaremill.macwire" %% "macros" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "util" % macwireVersion,
+      "com.softwaremill.macwire" %% "proxy" % macwireVersion,
+      // Monix
+      "io.monix" %% "monix-eval" % monixVersion,
+      "io.monix" %% "monix-execution" % monixVersion
+    )
+  )
+
+
+lazy val serviceAuth = (project in file("service-auth"))
+  .dependsOn(commonService, commonModel, commonUtil)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "service-auth",
+    libraryDependencies ++= Seq(
+      // Akka
+      "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-stream-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+      "com.typesafe.akka" %% "akka-stream-kafka" % akkaStreamKafkaVersion,
       // Akka Others
       "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
 
       // MacWire
-      "com.softwaremill.macwire" %% "macros"     % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "macros" % macwireVersion % Provided,
       "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % Provided,
-      "com.softwaremill.macwire" %% "util"       % macwireVersion,
-      "com.softwaremill.macwire" %% "proxy"      % macwireVersion,
-
-      // Circe
-      "io.circe" %% "circe-core"    % circeVersion,
-      "io.circe" %% "circe-generic" % circeVersion,
-      "io.circe" %% "circe-parser"  % circeVersion,
-      "de.heikoseeberger" %% "akka-http-circe" % akkaHttpCirce,
+      "com.softwaremill.macwire" %% "util" % macwireVersion,
+      "com.softwaremill.macwire" %% "proxy" % macwireVersion,
 
       // Monix
-      "io.monix" %% "monix-eval"      % monixVersion,
+      "io.monix" %% "monix-eval" % monixVersion,
       "io.monix" %% "monix-execution" % monixVersion,
 
-      // Others
-      "ch.qos.logback"              % "logback-classic"           % logbackClassicVersion,
-      "org.typelevel"               %% "cats-core"                % catsVersion,
-      "org.scalatest"               %% "scalatest"                % scalatestVersion % Test,
-      "com.github.pureconfig"       %% "pureconfig"               % pureconfigVersion,
-      "com.typesafe.scala-logging"  %% "scala-logging"            % "3.9.2",
-      "org.postgresql"              % "postgresql"                % "42.2.13",
-      "com.twilio.sdk"              % "twilio"                    % "7.17.0",
+      // Doboie
+      "org.tpolecat" %% "doobie-core" % doobieVersion,
+      "org.tpolecat" %% "doobie-hikari" % doobieVersion,
+      "org.tpolecat" %% "doobie-postgres" % doobieVersion,
 
-      // db
-      "org.tpolecat"          %% "doobie-core"              % doobieVersion,
-      "org.tpolecat"          %% "doobie-hikari"            % doobieVersion,
-      "org.tpolecat"          %% "doobie-postgres"          % doobieVersion,
-      "org.flywaydb"          % "flyway-core"               % flywayVersion,
-
-      // Crypto Utils
-      "org.whispersystems" % "curve25519-java"              % "0.5.0"
+      // Kamon
+      "io.kamon" %% "kamon-bundle" % kamonVersion,
+      "io.kamon" %% "kamon-akka-http" % kamonVersion,
+      "io.kamon" %% "kamon-akka" % kamonVersion
     )
   )
 
-PB.targets in Compile := Seq(
-  scalapb.gen() -> (sourceManaged in Compile).value / "scalapb"
-)
+// responsible for management of ring of trust
+lazy val serviceRing = (project in file("service-ring"))
+  .dependsOn(commonService, commonModel, commonUtil)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "service-ring",
+    libraryDependencies ++= Seq(
+      // Akka
+      "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-stream-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+      // MacWire
+      "com.softwaremill.macwire" %% "macros" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "util" % macwireVersion,
+      "com.softwaremill.macwire" %% "proxy" % macwireVersion,
+      // Monix
+      "io.monix" %% "monix-eval" % monixVersion,
+      "io.monix" %% "monix-execution" % monixVersion
+    )
+  )
+
+// responsible for sending data back to client
+lazy val serviceChannel = (project in file("service-channel"))
+  .dependsOn(commonService, commonModel, commonUtil)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "service-channel"
+  )
+
+
+//lazy val root = (project in file("."))
+//  .settings(commonSettings: _*)
+//  .settings(
+//    name := "canary-server",
+//    libraryDependencies ++= Seq(
+//      // Akka Core
+//      "com.typesafe.akka" %% "akka-actor-typed"         % akkaVersion,
+//      "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
+//      "com.typesafe.akka" %% "akka-slf4j"               % akkaVersion,
+//      "com.typesafe.akka" %% "akka-stream"              % akkaVersion,
+//
+//      // Akka Others
+//      "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
+//
+//      // MacWire
+//      "com.softwaremill.macwire" %% "macros"     % macwireVersion % Provided,
+//      "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % Provided,
+//      "com.softwaremill.macwire" %% "util"       % macwireVersion,
+//      "com.softwaremill.macwire" %% "proxy"      % macwireVersion,
+//
+//      // Circe
+//      "io.circe" %% "circe-core"    % circeVersion,
+//      "io.circe" %% "circe-generic" % circeVersion,
+//      "io.circe" %% "circe-parser"  % circeVersion,
+//      "de.heikoseeberger" %% "akka-http-circe" % akkaHttpCirce,
+//
+
+//
+//      // Others
+//      "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
+//      "org.typelevel" %% "cats-core" % catsVersion,
+//      "org.scalatest" %% "scalatest" % scalatestVersion % Test,
+//      "com.github.pureconfig" %% "pureconfig" % pureconfigVersion,
+
+//      "org.postgresql" % "postgresql" % "42.2.14",
+//      "com.twilio.sdk" % "twilio" % "7.54.1",
+//      "io.kamon" %% "kamon-bundle" % "2.1.4",
+//
+//      // db
+
+//      "org.tpolecat" %% "doobie-quill" % doobieVersion,
+//      "org.flywaydb" % "flyway-core" % flywayVersion,
+//
+
+//    )
+//  )
+//
+//PB.targets in Compile := Seq(
+//  scalapb.gen() -> (sourceManaged in Compile).value / "scalapb"
+//)
 
 
