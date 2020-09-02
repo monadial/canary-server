@@ -43,7 +43,7 @@ val commonSettings = Seq(
       id = "tmihalicka",
       name = "Tomas Mihalicka",
       email = "tomas@mihalicka.com",
-      url = url("http://www.mihalicka.com")
+      url = url("https://www.mihalicka.com")
     )
   ),
   test in assembly := {},
@@ -204,7 +204,29 @@ lazy val serviceChannel = (project in file("service-channel"))
     mainClass in assembly := Some("tech.canaryapp.server.channel.ChannelService")
   )
 
+lazy val serviceNotification = (project in file("service-notification"))
+  .dependsOn(commonService, commonModel, commonUtil)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "service-notification",
+    mainClass in assembly := Some("tech.canaryapp.server.notification.NotificationService")
+  )
 
+lazy val serviceSms = (project in file("service-sms"))
+  .dependsOn(commonService, commonModel, commonUtil)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "service-sms",
+    mainClass in assembly := Some("tech.canaryapp.server.sms.SmsService")
+  )
+
+lazy val serviceEmail = (project in file("service-email"))
+  .dependsOn(commonService, commonModel, commonUtil)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "service-email",
+    mainClass in assembly := Some("tech.canaryapp.server.email.EmailService")
+  )
 //lazy val root = (project in file("."))
 //  .settings(commonSettings: _*)
 //  .settings(
