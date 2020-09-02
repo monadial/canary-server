@@ -1,28 +1,173 @@
 version: '3.3'
 
 services:
-  postreges:
-    image: postgres
-    container_name: canary-postreges
-    restart: unless-stopped
+
+  #
+  # Zookeeper
+  #
+
+  canary-zookeeper-1:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: canary-zookeeper-1
+    ports:
+      - "12181:12181"
     environment:
-      - POSTGRES_USER=canary
-      - POSTGRES_PASSWORD=Password1
-      - POSTGRES_DB=canary
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 12181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: canary-zookeeper-1:12888:13888;canary-zookeeper-2:22888:23888;canary-zookeeper-3:32888:33888
+
+  canary-zookeeper-2:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: canary-zookeeper-2
+    ports:
+      - "22181:22181"
+    environment:
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_CLIENT_PORT: 22181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: canary-zookeeper-1:12888:13888;canary-zookeeper-2:22888:23888;canary-zookeeper-3:32888:33888
+
+  canary-zookeeper-3:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: canary-zookeeper-3
+    ports:
+      - "32181:32181"
+    environment:
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: canary-zookeeper-1:12888:13888;canary-zookeeper-2:22888:23888;canary-zookeeper-3:32888:33888
+
+  #
+  # Kafka
+  #
+
+  canary-kafka-1:
+    image: confluentinc/cp-kafka:latest
+    container_name: canary-kafka-1
+    ports:
+      - "19092:19092"
+    depends_on:
+      - canary-zookeeper-1
+      - canary-zookeeper-2
+      - canary-zookeeper-3
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: canary-zookeeper-1:12181,canary-zookeeper-2:12181,canary-zookeeper-3:12181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://canary-kafka-1:19092
+
+  canary-kafka-2:
+    image: confluentinc/cp-kafka:latest
+    container_name: canary-kafka-2
+    ports:
+      - "29092:29092"
+    depends_on:
+      - canary-zookeeper-1
+      - canary-zookeeper-2
+      - canary-zookeeper-3
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: canary-zookeeper-1:12181,canary-zookeeper-2:12181,canary-zookeeper-3:12181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://canary-kafka-2:29092
+
+  canary-kafka-3:
+    image: confluentinc/cp-kafka:latest
+    container_name: canary-kafka-3
+    ports:
+      - "39092:39092"
+    depends_on:
+      - canary-zookeeper-1
+      - canary-zookeeper-2
+      - canary-zookeeper-3
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: canary-zookeeper-1:12181,canary-zookeeper-2:12181,canary-zookeeper-3:12181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://canary-kafka-3:39092
+
+  #
+  # Postgress
+  #
+
+  canary-postgres:
+    image: postgres
+    container_name: canary-postgres
+    environment:
+      POSTGRES_USER: canary
+      POSTGRES_PASSWORD: Password1
     volumes:
-      - database-data:/var/lib/postgresql/data
+      - canary-postreges-data:/var/lib/postgresql/data
+      - ./.docker/service/canary-postreges/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
     ports:
       - 5432:5432
 
-  adminer:
-    image: adminer
-    container_name: canary-adminer
-    restart: unless-stopped
-    environment:
-      - ADMINER_DEFAULT_SYSTEM=postreges
+  #
+  # Tools
+  #
+
+  canary-kafka-manager:
+    image: hlebalbau/kafka-manager:stable
+    container_name: canary-kafka-manager
+    depends_on:
+      - canary-kafka-1
+      - canary-kafka-2
+      - canary-kafka-3
     ports:
-      - 5433:8080
+      - "10020:9000"
+    environment:
+      ZK_HOSTS: canary-zookeeper-1:12181,canary-zookeeper-2:12181,canary-zookeeper-3:12181
+
+  canary-pgadmin:
+    image: dpage/pgadmin4
+    container_name: canary-pgadmin
+    ports:
+      - "10021:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@canaryapp.tech
+      PGADMIN_DEFAULT_PASSWORD: Password1
+    depends_on:
+      - canary-postgres
+    volumes:
+      - ./.docker/service/canary-pgadmin/servers.json:/pgadmin4/servers.json
+      - canary-pgadmin-data:/var/lib/pgadmin
+
+  canary-kafdrop:
+    image: obsidiandynamics/kafdrop
+    container_name: canary-kafdrop
+    depends_on:
+      - canary-kafka-1
+      - canary-kafka-2
+      - canary-kafka-3
+    ports:
+      - "10022:9000"
+    environment:
+      KAFKA_BROKERCONNECT: canary-kafka-1:19092,canary-kafka-2:29092,canary-kafka-3:39092
+      JVM_OPTS: "-Xms32M -Xmx64M"
+      SERVER_SERVLET_CONTEXTPATH: "/"
+
+  canary-zoonavigator:
+    image: elkozmon/zoonavigator:latest
+    container_name: canary-zoonavigator
+    ports:
+      - "10023:9000"
+    depends_on:
+      - canary-zookeeper-1
+      - canary-zookeeper-2
+      - canary-zookeeper-3
+    environment:
+      HTTP_PORT: 9000
+      CONNECTION_CANARY_NAME: canary
+      CONNECTION_CANARY_CONN: canary-zookeeper-1:12181,canary-zookeeper-2:12181,canary-zookeeper-3:12181
+      AUTO_CONNECT_CONNECTION_ID: CANARY
 
 volumes:
-  database-data:
+  canary-postreges-data:
+    driver: local
+  canary-pgadmin-data:
     driver: local

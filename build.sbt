@@ -110,8 +110,6 @@ lazy val commonService = (project in file("common-service"))
     )
   )
 
-
-
 lazy val serviceCrypto = (project in file("service-crypto"))
   .dependsOn(commonService, commonModel, commonUtil)
   .settings(commonSettings: _*)
@@ -166,6 +164,7 @@ lazy val serviceAuth = (project in file("service-auth"))
       "org.tpolecat" %% "doobie-core" % doobieVersion,
       "org.tpolecat" %% "doobie-hikari" % doobieVersion,
       "org.tpolecat" %% "doobie-postgres" % doobieVersion,
+      "org.flywaydb" % "flyway-core" % flywayVersion,
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
@@ -205,6 +204,24 @@ lazy val serviceChannel = (project in file("service-channel"))
   .settings(commonSettings: _*)
   .settings(
     name := "service-channel",
+    libraryDependencies ++= Seq(
+      // Akka
+      "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-stream-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+      // MacWire
+      "com.softwaremill.macwire" %% "macros" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "util" % macwireVersion,
+      "com.softwaremill.macwire" %% "proxy" % macwireVersion,
+      // Monix
+      "io.monix" %% "monix-eval" % monixVersion,
+      "io.monix" %% "monix-execution" % monixVersion,
+      // Kamon
+      "io.kamon" %% "kamon-bundle" % kamonVersion
+    ),
     mainClass in assembly := Some("tech.canaryapp.server.channel.ChannelService")
   )
 
@@ -213,6 +230,24 @@ lazy val serviceNotification = (project in file("service-notification"))
   .settings(commonSettings: _*)
   .settings(
     name := "service-notification",
+    libraryDependencies ++= Seq(
+      // Akka
+      "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-stream-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+      // MacWire
+      "com.softwaremill.macwire" %% "macros" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "util" % macwireVersion,
+      "com.softwaremill.macwire" %% "proxy" % macwireVersion,
+      // Monix
+      "io.monix" %% "monix-eval" % monixVersion,
+      "io.monix" %% "monix-execution" % monixVersion,
+      // Kamon
+      "io.kamon" %% "kamon-bundle" % kamonVersion
+    ),
     mainClass in assembly := Some("tech.canaryapp.server.notification.NotificationService")
   )
 
@@ -221,6 +256,24 @@ lazy val serviceSms = (project in file("service-sms"))
   .settings(commonSettings: _*)
   .settings(
     name := "service-sms",
+    libraryDependencies ++= Seq(
+      // Akka
+      "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-stream-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+      // MacWire
+      "com.softwaremill.macwire" %% "macros" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "util" % macwireVersion,
+      "com.softwaremill.macwire" %% "proxy" % macwireVersion,
+      // Monix
+      "io.monix" %% "monix-eval" % monixVersion,
+      "io.monix" %% "monix-execution" % monixVersion,
+      // Kamon
+      "io.kamon" %% "kamon-bundle" % kamonVersion
+    ),
     mainClass in assembly := Some("tech.canaryapp.server.sms.SmsService")
   )
 
@@ -229,57 +282,24 @@ lazy val serviceEmail = (project in file("service-email"))
   .settings(commonSettings: _*)
   .settings(
     name := "service-email",
+    libraryDependencies ++= Seq(
+      // Akka
+      "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-stream-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+      // MacWire
+      "com.softwaremill.macwire" %% "macros" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "util" % macwireVersion,
+      "com.softwaremill.macwire" %% "proxy" % macwireVersion,
+      // Monix
+      "io.monix" %% "monix-eval" % monixVersion,
+      "io.monix" %% "monix-execution" % monixVersion,
+      // Kamon
+      "io.kamon" %% "kamon-bundle" % kamonVersion
+    ),
     mainClass in assembly := Some("tech.canaryapp.server.email.EmailService")
   )
-//lazy val root = (project in file("."))
-//  .settings(commonSettings: _*)
-//  .settings(
-//    name := "canary-server",
-//    libraryDependencies ++= Seq(
-//      // Akka Core
-//      "com.typesafe.akka" %% "akka-actor-typed"         % akkaVersion,
-//      "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
-//      "com.typesafe.akka" %% "akka-slf4j"               % akkaVersion,
-//      "com.typesafe.akka" %% "akka-stream"              % akkaVersion,
-//
-//      // Akka Others
-//      "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
-//
-//      // MacWire
-//      "com.softwaremill.macwire" %% "macros"     % macwireVersion % Provided,
-//      "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % Provided,
-//      "com.softwaremill.macwire" %% "util"       % macwireVersion,
-//      "com.softwaremill.macwire" %% "proxy"      % macwireVersion,
-//
-//      // Circe
-//      "io.circe" %% "circe-core"    % circeVersion,
-//      "io.circe" %% "circe-generic" % circeVersion,
-//      "io.circe" %% "circe-parser"  % circeVersion,
-//      "de.heikoseeberger" %% "akka-http-circe" % akkaHttpCirce,
-//
-
-//
-//      // Others
-//      "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
-//      "org.typelevel" %% "cats-core" % catsVersion,
-//      "org.scalatest" %% "scalatest" % scalatestVersion % Test,
-//      "com.github.pureconfig" %% "pureconfig" % pureconfigVersion,
-
-//      "org.postgresql" % "postgresql" % "42.2.14",
-//      "com.twilio.sdk" % "twilio" % "7.54.1",
-//      "io.kamon" %% "kamon-bundle" % "2.1.4",
-//
-//      // db
-
-//      "org.tpolecat" %% "doobie-quill" % doobieVersion,
-//      "org.flywaydb" % "flyway-core" % flywayVersion,
-//
-
-//    )
-//  )
-//
-//PB.targets in Compile := Seq(
-//  scalapb.gen() -> (sourceManaged in Compile).value / "scalapb"
-//)
-
 

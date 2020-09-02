@@ -10,13 +10,14 @@ import org.apache.kafka.clients.producer.Producer
 import tech.canaryapp.server.auth.actor.ActorModule
 import tech.canaryapp.server.auth.actor.supervisor.SupervisorActor
 import tech.canaryapp.server.auth.config.{AuthServiceConfig, AuthServiceConfigImpl}
-import tech.canaryapp.server.auth.persistence.DoobieHikariTransactor
+import tech.canaryapp.server.auth.persistence.{DoobieHikariTransactor, FlywayDoobieMigration}
 import tech.canaryapp.server.auth.persistence.DoobieHikariTransactor.Transactor
 import tech.canaryapp.server.service.Service
 import tech.canaryapp.server.service.config.Config
 import tech.canaryapp.server.service.model.ServiceName
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
+import scala.language.postfixOps
 
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>
@@ -29,12 +30,12 @@ object AuthService extends Service {
   override protected def start(serviceConfig: Config): Task[Unit] = {
     val authServiceConfig = AuthServiceConfigImpl(serviceConfig)
     DoobieHikariTransactor.instance(authServiceConfig.database).use { tx =>
-      Task.eval[ActorModule](new ActorModule {
+      FlywayDoobieMigration.migrate(tx) >> Task.eval[ActorModule](new ActorModule {
         override val config: AuthServiceConfig = authServiceConfig
         override val transactor: Transactor = tx
-        override val kafkaProducer: Producer[Array[Byte], Array[Byte]] = config
-          .kafkaProducerSettings
-          .createKafkaProducer()
+//        override val kafkaProducer: Producer[Array[Byte], Array[Byte]] = config
+//          .kafkaProducerSettings
+//          .createKafkaProducer()
       })
         .bracket { module =>
           Task.cancelable[Unit] { callback =>

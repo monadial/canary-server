@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Canary Postgres",
+      "Group": "canary",
+      "Port": 5432,
+      "Username": "canary",
+      "Host": "canary-postgres",
+      "SSLMode": "prefer",
+      "MaintenanceDB": "postgres"
+    }
+  }
+}

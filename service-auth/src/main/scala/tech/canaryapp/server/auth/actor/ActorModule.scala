@@ -15,7 +15,7 @@ trait ActorModule {
 
   val transactor: Transactor
 
-  val kafkaProducer: Producer[Array[Byte], Array[Byte]]
+//  val kafkaProducer: Producer[Array[Byte], Array[Byte]]
 
   lazy val httpActorProvider: HttpServerActor.Provider = wireWith(HttpServerActorImpl.createActor _)
 

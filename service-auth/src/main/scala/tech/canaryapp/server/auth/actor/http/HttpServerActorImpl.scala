@@ -60,7 +60,6 @@ object HttpServerActorImpl {
             Stop
         }
 
-
         def serverInitialization(stopping: Boolean): Behavior[Message] =
           Behaviors.receiveMessagePartial {
             case HttpServerBindingAvailable(binding) =>
