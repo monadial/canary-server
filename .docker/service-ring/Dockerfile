@@ -22,13 +22,13 @@ RUN apt-get update \
 
 # Build project
 RUN rm versioning.sbt project/versioning.sbt \
-  && sbt "project serviceAuth; assembly"
+  && sbt "project serviceRing; assembly"
 
 # Set workdir
 WORKDIR /out
 
 # Copy startup script
-COPY ./.docker/service-auth/start.sh ./app/start.sh
+COPY ./.docker/service-ring/start.sh ./app/start.sh
 
 RUN mv /src/service-auth/target/scala-2.13/assembly.jar ./app/assembly.jar \
   && chmod +x ./app/start.sh \

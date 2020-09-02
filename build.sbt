@@ -67,7 +67,6 @@ lazy val root = (project in file("."))
   .aggregate(serviceAuth, serviceCrypto, serviceRing)
   .settings(commonSettings: _*)
   .settings(name := "canary", skip in publish := true)
-  .enablePlugins(SemVerPlugin)
   .enablePlugins(BuildInfoPlugin)
   .settings(
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
