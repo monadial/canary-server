@@ -8,3 +8,4 @@ target
 /RUNNING_PID
 assembly.jar
 /*.log
+.DS_Store
