@@ -9,9 +9,11 @@ trait KafkaConfig {
 
   val bootstrapServers: List[String]
 
-  val messagesTopicName: String
+  val topics: List[String]
 
   val kafkaConsumerSettings: TConfig
 
   val kafkaProducerSettings: TConfig
+
+  val kafkaCommitterSettings: TConfig
 }

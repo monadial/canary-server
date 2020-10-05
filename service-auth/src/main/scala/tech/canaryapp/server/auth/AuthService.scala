@@ -3,9 +3,11 @@ package tech.canaryapp.server.auth
 import akka.actor.CoordinatedShutdown
 import akka.actor.typed.scaladsl.AskPattern._
 import akka.actor.typed.scaladsl.adapter._
-import akka.actor.typed.{ActorSystem, Scheduler}
+import akka.actor.typed.{ActorSystem, Scheduler => AkkaScheduler}
 import akka.util.Timeout
 import monix.eval.Task
+import monix.execution
+import monix.execution.Scheduler
 import org.apache.kafka.clients.producer.Producer
 import tech.canaryapp.server.auth.actor.ActorModule
 import tech.canaryapp.server.auth.actor.supervisor.SupervisorActor
@@ -30,12 +32,17 @@ object AuthService extends Service {
   override protected def start(serviceConfig: Config): Task[Unit] = {
     val authServiceConfig = AuthServiceConfigImpl(serviceConfig)
     DoobieHikariTransactor.instance(authServiceConfig.database).use { tx =>
-      FlywayDoobieMigration.migrate(tx) >> Task.eval[ActorModule](new ActorModule {
+      Task.eval[ActorModule](new ActorModule {
         override val config: AuthServiceConfig = authServiceConfig
+
         override val transactor: Transactor = tx
-//        override val kafkaProducer: Producer[Array[Byte], Array[Byte]] = config
-//          .kafkaProducerSettings
-//          .createKafkaProducer()
+
+        override val scheduler: Scheduler =
+          Scheduler.computation(config.parallelism, "canary-auth-message-consumer")
+
+        override val kafkaProducer: Producer[Array[Byte], Array[Byte]] = config
+          .kafkaProducerSettings
+          .createKafkaProducer()
       })
         .bracket { module =>
           Task.cancelable[Unit] { callback =>
@@ -47,7 +54,7 @@ object AuthService extends Service {
 
             CoordinatedShutdown(actorSystem.toClassic)
               .addTask(CoordinatedShutdown.PhaseBeforeActorSystemTerminate, "stopActors") { () =>
-                implicit val scheduler: Scheduler = actorSystem.scheduler
+                implicit val scheduler: AkkaScheduler = actorSystem.scheduler
                 implicit val timeout: Timeout = Timeout(module.config.gracefulShutdownTimeout)
                 actorSystem ? SupervisorActor.Stop
               }

@@ -1,6 +1,6 @@
 package tech.canaryapp.server.auth.config
 
-import akka.kafka.{ConsumerSettings, ProducerSettings}
+import akka.kafka.{CommitterSettings, ConsumerSettings, ProducerSettings}
 import tech.canaryapp.server.service.config.ServiceConfig
 
 import scala.concurrent.duration.FiniteDuration
@@ -11,6 +11,16 @@ import scala.concurrent.duration.FiniteDuration
 trait AuthServiceConfig extends ServiceConfig {
   val gracefulShutdownTimeout: FiniteDuration
 
+  val idleTimeout: FiniteDuration
+
+  val bufferSize: Int
+
+  val parallelism: Int
+
+  val maxBatchSize: Int
+
+  val maxBatchAge: FiniteDuration
+
   val database: DatabaseConfig
 
   val httpService: HttpServerConfig
@@ -18,4 +28,6 @@ trait AuthServiceConfig extends ServiceConfig {
   val kafkaConsumerSettings: ConsumerSettings[Array[Byte], Array[Byte]]
 
   val kafkaProducerSettings: ProducerSettings[Array[Byte], Array[Byte]]
+
+  val kafkaCommitterSettings: CommitterSettings
 }

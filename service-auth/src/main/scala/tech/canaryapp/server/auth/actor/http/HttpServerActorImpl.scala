@@ -8,6 +8,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.execution.Scheduler
 import tech.canaryapp.server.auth.actor.http.HttpServerActor.{HttpServerBindingAvailable, Message, Provider, Stop}
@@ -20,12 +21,12 @@ import scala.util.{Failure, Success}
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>
  */
-object HttpServerActorImpl {
+object HttpServerActorImpl extends LazyLogging {
 
-  def createActor(serviceConfig: AuthServiceConfig): Provider =
+  def createActor(config: AuthServiceConfig): Provider =
     () =>
       Behaviors.setup { context =>
-        lazy val httpConfig = serviceConfig.httpService
+        lazy val httpConfig = config.httpService
 
         // implicits
         implicit val akkaActorSystem: UntypedActorSystem =
@@ -53,10 +54,10 @@ object HttpServerActorImpl {
 
         context.pipeToSelf(bindingTask.timeout(10 seconds).runToFuture) {
           case Success(value) =>
-            context.log.info(s"HTTP server bind successful to interface ${httpConfig.interface}:${httpConfig.port}.")
+            logger.info(s"HTTP server bind successful to interface ${httpConfig.interface}:${httpConfig.port}.")
             HttpServerBindingAvailable(value)
           case Failure(exception) =>
-            context.log.error(s"HTTP server bind unsuccessful to interface ${httpConfig.interface}:${httpConfig.port}.", exception)
+            logger.error(s"HTTP server bind unsuccessful to interface ${httpConfig.interface}:${httpConfig.port}.", exception)
             Stop
         }
 
@@ -68,12 +69,12 @@ object HttpServerActorImpl {
               }
               Behaviors.receiveMessagePartial {
                 case Stop =>
-                  context.pipeToSelf(binding.terminate(serviceConfig.gracefulShutdownTimeout)) {
+                  context.pipeToSelf(binding.terminate(config.gracefulShutdownTimeout)) {
                     case Success(_) =>
-                      context.log.info("HTTP server shutdown successful")
+                      logger.info("HTTP server shutdown successful")
                       Stop
                     case Failure(exception) =>
-                      context.log.error("HTTP server shutdown failed", exception)
+                      logger.error("HTTP server shutdown failed", exception)
                       Stop
                   }
                   Behaviors.receiveMessagePartial {

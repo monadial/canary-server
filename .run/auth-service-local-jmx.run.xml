@@ -2,6 +2,7 @@
   <configuration default="false" name="auth-service-local-jmx" type="Application" factoryName="Application">
     <envs>
       <env name="CLUSTER_NAME" value="local" />
+      <env name="CONFIG" value="zookeeper://" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="tech.canaryapp.server.auth.AuthService" />
     <module name="service-auth" />

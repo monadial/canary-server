@@ -42,7 +42,7 @@ trait Service extends LazyLogging {
   final def main(args: Array[String]): Unit = {
     Kamon.init()
     val cancelableFuture = rootConfig
-      .map(c => DefaultConfigImpl(c))
+      .map(c => DefaultConfigImpl(c, clusterName, instanceName, serviceName))
       .flatMap { config =>
         logger.info(s"Starting Canary service ${serviceName.name} @ ${startTime.asDate().toString}.")
         logger.info(s"Starting cluster service: ${serviceName.name}, member: " + instanceName.toString + ".")

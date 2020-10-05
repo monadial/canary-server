@@ -1,4 +1,4 @@
-ThisBuild / scalaVersion := "2.13.2"
+ThisBuild / scalaVersion := "2.13.3"
 ThisBuild / organization := "tech.canaryapp"
 ThisBuild / organizationName := "CanaryApp"
 
@@ -20,9 +20,9 @@ scalacOptions in ThisBuild ++= Seq(
 dependencyUpdatesFilter -= moduleFilter(organization = "org.scala-lang")
 
 val typesafeConfig = "1.4.0"
-val akkaVersion = "2.6.8"
-val akkaHttpVersion = "10.1.12"
-val akkaStreamKafkaVersion = "2.0.4"
+val akkaVersion = "2.6.9"
+val akkaHttpVersion = "10.2.1"
+val akkaStreamKafkaVersion = "2.0.5"
 val macwireVersion = "2.3.7"
 val circeVersion = "0.13.0"
 val monixVersion = "3.2.2"
@@ -31,13 +31,13 @@ val catsVersion = "2.1.1"
 val scalatestVersion = "3.2.0"
 val pureconfigVersion = "0.13.0"
 val akkaHttpCirce = "1.33.0"
-val doobieVersion = "0.9.0"
-val flywayVersion = "6.5.3"
-val kamonVersion = "2.1.4"
+val doobieVersion = "0.9.2"
+val flywayVersion = "7.0.0"
+val kamonVersion = "2.1.6"
 
 val commonSettings = Seq(
   organization := "tech.canaryapp",
-  scalaVersion := "2.13.2",
+  scalaVersion := "2.13.3",
   developers := List(
     Developer(
       id = "tmihalicka",

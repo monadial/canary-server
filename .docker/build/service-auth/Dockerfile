@@ -28,7 +28,7 @@ RUN rm versioning.sbt project/versioning.sbt \
 WORKDIR /out
 
 # Copy startup script
-COPY ./.docker/service-auth/start.sh ./app/start.sh
+COPY ./.docker/build/service-auth/start.sh ./app/start.sh
 
 RUN mv /src/service-auth/target/scala-2.13/assembly.jar ./app/assembly.jar \
   && chmod +x ./app/start.sh \

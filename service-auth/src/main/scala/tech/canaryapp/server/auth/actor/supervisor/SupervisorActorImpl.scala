@@ -3,37 +3,52 @@ package tech.canaryapp.server.auth.actor.supervisor
 import akka.Done
 import akka.actor.typed.Terminated
 import akka.actor.typed.scaladsl.Behaviors
+import com.typesafe.scalalogging.LazyLogging
 import tech.canaryapp.server.auth.actor.http.HttpServerActor
+import tech.canaryapp.server.auth.actor.consumer.ConsumerActor
+import tech.canaryapp.server.auth.actor.forwarder.ForwarderActor
 import tech.canaryapp.server.auth.actor.supervisor.SupervisorActor.{Message, Provider, Stop}
 
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>
  */
-object SupervisorActorImpl {
+object SupervisorActorImpl extends LazyLogging {
 
   def createActor(
+    forwarderActorProvider: ForwarderActor.Provider,
+    consumerActorProvider: ConsumerActor.Provider,
     httpActorProvider: HttpServerActor.Provider
   ): Provider =
     () =>
       Behaviors.setup { context =>
+        // forwarder
+        val forwarderActor = context.spawn(forwarderActorProvider(), "forwarder")
+        context.watch(forwarderActor)
+
+        // consumer
+        val consumerActor = context.spawn(consumerActorProvider(forwarderActor), "consumer")
+        context.watch(consumerActor)
+
         // http server
         val httpServerActor = context.spawn(httpActorProvider(), "http-server")
         context.watch(httpServerActor)
 
         Behaviors.receiveMessagePartial[Message] {
           case Stop(replyTo) =>
+            consumerActor ! ConsumerActor.Stop
             httpServerActor ! HttpServerActor.Stop
+            forwarderActor ! ForwarderActor.Stop // must stopped last
 
             Behaviors.receiveSignal {
               case (context, Terminated(ref)) =>
                 val children = context.children.toList
 
                 if (children.isEmpty) {
-                  context.log.info("Service supervisor shutdown completed.")
+                  logger.info("Service supervisor shutdown completed.")
                   replyTo ! Done
                   Behaviors.same
                 } else {
-                  context.log.debug(
+                  logger.debug(
                     "Supervisor child ({}) terminated, {} child left.",
                     ref.path.toStringWithoutAddress,
                     children.length
@@ -43,7 +58,7 @@ object SupervisorActorImpl {
             }
         } receiveSignal {
           case (context, Terminated(ref)) =>
-            context.log.error("Supervisor child {} terminated unexpectedly.", ref.path.toStringWithoutAddress)
+            logger.error("Supervisor child {} terminated unexpectedly.", ref.path.toStringWithoutAddress)
             context.system.terminate()
             Behaviors.same
         }
