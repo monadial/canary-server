@@ -1,10 +1,10 @@
-ThisBuild / scalaVersion := "2.13.3"
+ThisBuild / scalaVersion := "2.13.6"
 ThisBuild / organization := "tech.canaryapp"
-ThisBuild / organizationName := "CanaryApp"
+ThisBuild / organizationName := "Monadial"
 
 ThisBuild / licenses += "AGPLv3" -> url("https://www.gnu.org/licenses/agpl-3.0.en.html")
 
-scalacOptions in ThisBuild ++= Seq(
+ThisBuild / scalacOptions ++= Seq(
   "-encoding",
   "UTF-8",
   "-deprecation",
@@ -19,25 +19,26 @@ scalacOptions in ThisBuild ++= Seq(
 
 dependencyUpdatesFilter -= moduleFilter(organization = "org.scala-lang")
 
-val typesafeConfig = "1.4.0"
-val akkaVersion = "2.6.9"
-val akkaHttpVersion = "10.2.1"
-val akkaStreamKafkaVersion = "2.0.5"
-val macwireVersion = "2.3.7"
+val typesafeConfig = "1.4.1"
+val akkaVersion = "2.6.16"
+val akkaHttpVersion = "10.2.6"
+val akkaStreamKafkaVersion = "2.1.1"
+val macwireVersion = "2.4.1"
 val circeVersion = "0.13.0"
-val monixVersion = "3.2.2"
-val logbackClassicVersion = "1.2.3"
+val monixVersion = "3.4.0"
+val logbackClassicVersion = "1.2.6"
 val catsVersion = "2.1.1"
 val scalatestVersion = "3.2.0"
 val pureconfigVersion = "0.13.0"
 val akkaHttpCirce = "1.33.0"
-val doobieVersion = "0.9.2"
-val flywayVersion = "7.0.0"
-val kamonVersion = "2.1.6"
+val doobieVersion = "0.13.4"
+val flywayVersion = "7.15.0"
+val kamonVersion = "2.2.3"
+val bouncyCastleVersion = "1.69"
 
 val commonSettings = Seq(
   organization := "tech.canaryapp",
-  scalaVersion := "2.13.3",
+  scalaVersion := "2.13.6",
   developers := List(
     Developer(
       id = "tmihalicka",
@@ -46,9 +47,9 @@ val commonSettings = Seq(
       url = url("https://www.mihalicka.com")
     )
   ),
-  test in assembly := {},
-  assemblyJarName in assembly := "assembly.jar",
-  assemblyMergeStrategy in assembly := {
+  assembly / test := {},
+  assembly / assemblyJarName := "assembly.jar",
+  assembly / assemblyMergeStrategy := {
     case x if x.endsWith(".conf") => MergeStrategy.concat
     case x if x.endsWith("io.netty.versions.properties") => MergeStrategy.first
     case x if x.endsWith("module-info.class") => MergeStrategy.first
@@ -66,7 +67,7 @@ lazy val root = (project in file("."))
   .aggregate(commonModel, commonService, commonUtil)
   .aggregate(serviceAuth, serviceCrypto, serviceRing)
   .settings(commonSettings: _*)
-  .settings(name := "canary", skip in publish := true)
+  .settings(name := "canary", publish / skip := true)
   .enablePlugins(BuildInfoPlugin)
   .settings(
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
@@ -105,8 +106,10 @@ lazy val commonService = (project in file("common-service"))
       "io.kamon" %% "kamon-bundle" % kamonVersion,
       // Others
       "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
-      "com.typesafe" % "config" % typesafeConfig
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
+      "com.typesafe" % "config" % typesafeConfig,
+      // Cryptography
+      "org.bouncycastle"  % "bcprov-jdk15on" % bouncyCastleVersion
     )
   )
 
@@ -133,7 +136,7 @@ lazy val serviceCrypto = (project in file("service-crypto"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    mainClass in assembly := Some("tech.canaryapp.server.crypto.CryptoService")
+    assembly / mainClass := Some("tech.canaryapp.server.crypto.CryptoService")
   )
 
 
@@ -168,7 +171,7 @@ lazy val serviceAuth = (project in file("service-auth"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    mainClass in assembly := Some("tech.canaryapp.server.auth.AuthService")
+    assembly / mainClass := Some("tech.canaryapp.server.auth.AuthService")
   )
 
 // responsible for management of ring of trust
@@ -195,7 +198,7 @@ lazy val serviceRing = (project in file("service-ring"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    mainClass in assembly := Some("tech.canaryapp.server.ring.RingService")
+    assembly / mainClass := Some("tech.canaryapp.server.ring.RingService")
   )
 
 // responsible for sending data back to client
@@ -222,7 +225,7 @@ lazy val serviceChannel = (project in file("service-channel"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    mainClass in assembly := Some("tech.canaryapp.server.channel.ChannelService")
+    assembly / mainClass := Some("tech.canaryapp.server.channel.ChannelService")
   )
 
 lazy val serviceNotification = (project in file("service-notification"))
@@ -248,7 +251,7 @@ lazy val serviceNotification = (project in file("service-notification"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    mainClass in assembly := Some("tech.canaryapp.server.notification.NotificationService")
+    assembly / mainClass := Some("tech.canaryapp.server.notification.NotificationService")
   )
 
 lazy val serviceSms = (project in file("service-sms"))
@@ -274,7 +277,7 @@ lazy val serviceSms = (project in file("service-sms"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    mainClass in assembly := Some("tech.canaryapp.server.sms.SmsService")
+    assembly / mainClass:= Some("tech.canaryapp.server.sms.SmsService")
   )
 
 lazy val serviceEmail = (project in file("service-email"))
@@ -300,6 +303,31 @@ lazy val serviceEmail = (project in file("service-email"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    mainClass in assembly := Some("tech.canaryapp.server.email.EmailService")
+    assembly / mainClass := Some("tech.canaryapp.server.email.EmailService")
   )
 
+lazy val serviceNone = (project in file("service-nonce"))
+  .dependsOn(commonService, commonModel, commonUtil)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "service-nonce",
+    libraryDependencies ++= Seq(
+      // Akka
+      "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-stream-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+      // MacWire
+      "com.softwaremill.macwire" %% "macros" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "macrosakka" % macwireVersion % Provided,
+      "com.softwaremill.macwire" %% "util" % macwireVersion,
+      "com.softwaremill.macwire" %% "proxy" % macwireVersion,
+      // Monix
+      "io.monix" %% "monix-eval" % monixVersion,
+      "io.monix" %% "monix-execution" % monixVersion,
+      // Kamon
+      "io.kamon" %% "kamon-bundle" % kamonVersion
+    ),
+    assembly / mainClass := Some("tech.canaryapp.server.email.EmailService")
+  )
