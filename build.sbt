@@ -78,11 +78,24 @@ lazy val commonUtil = (project in file("common-util"))
   .settings(
     name := "common-util",
     libraryDependencies ++= Seq(
+      // Akka
+      "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-stream-typed" % akkaVersion,
+      "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+      "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+      "com.typesafe.akka" %% "akka-stream-kafka" % akkaStreamKafkaVersion,
+      // Akka Others
+      "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
       // Monix
       "io.monix" %% "monix-eval" % monixVersion,
       "io.monix" %% "monix-execution" % monixVersion,
       // Others
-      "com.typesafe" % "config" % typesafeConfig
+      "com.typesafe" % "config" % typesafeConfig,
+      // Others
+      "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
+      "com.typesafe" % "config" % typesafeConfig,
     )
   )
 
@@ -99,15 +112,7 @@ lazy val commonService = (project in file("common-service"))
   .settings(
     name := "common-service",
     libraryDependencies ++= Seq(
-      // Monix
-      "io.monix" %% "monix-eval" % monixVersion,
-      "io.monix" %% "monix-execution" % monixVersion,
-      // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion,
-      // Others
-      "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
-      "com.typesafe" % "config" % typesafeConfig,
       // Cryptography
       "org.bouncycastle"  % "bcprov-jdk15on" % bouncyCastleVersion
     )
