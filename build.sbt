@@ -1,8 +1,9 @@
 ThisBuild / scalaVersion := "2.13.6"
-ThisBuild / organization := "tech.canaryapp"
+ThisBuild / organization := "com.monadial"
 ThisBuild / organizationName := "Monadial"
 
 ThisBuild / licenses += "AGPLv3" -> url("https://www.gnu.org/licenses/agpl-3.0.en.html")
+ThisBuild / startYear := Some(2021)
 
 ThisBuild / scalacOptions ++= Seq(
   "-encoding",
@@ -71,7 +72,7 @@ lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin)
   .settings(
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage := "tech.canaryapp.server.model"
+    buildInfoPackage := "com.monadial.canary.server.model"
   )
 
 lazy val commonUtil = (project in file("common-util"))
@@ -141,7 +142,7 @@ lazy val serviceCrypto = (project in file("service-crypto"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    assembly / mainClass := Some("tech.canaryapp.server.crypto.CryptoService")
+    assembly / mainClass := Some("com.monadial.canary.server.crypto.CryptoService")
   )
 
 
@@ -176,7 +177,7 @@ lazy val serviceAuth = (project in file("service-auth"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    assembly / mainClass := Some("tech.canaryapp.server.auth.AuthService")
+    assembly / mainClass := Some("com.monadial.canary.server.auth.AuthService")
   )
 
 // responsible for management of ring of trust
@@ -203,7 +204,7 @@ lazy val serviceRing = (project in file("service-ring"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    assembly / mainClass := Some("tech.canaryapp.server.ring.RingService")
+    assembly / mainClass := Some("com.monadial.canary.server.ring.RingService")
   )
 
 // responsible for sending data back to client
@@ -230,7 +231,7 @@ lazy val serviceChannel = (project in file("service-channel"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    assembly / mainClass := Some("tech.canaryapp.server.channel.ChannelService")
+    assembly / mainClass := Some("com.monadial.canary.server.channel.ChannelService")
   )
 
 lazy val serviceNotification = (project in file("service-notification"))
@@ -256,7 +257,7 @@ lazy val serviceNotification = (project in file("service-notification"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    assembly / mainClass := Some("tech.canaryapp.server.notification.NotificationService")
+    assembly / mainClass := Some("com.monadial.canary.server.notification.NotificationService")
   )
 
 lazy val serviceSms = (project in file("service-sms"))
@@ -282,7 +283,7 @@ lazy val serviceSms = (project in file("service-sms"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    assembly / mainClass:= Some("tech.canaryapp.server.sms.SmsService")
+    assembly / mainClass:= Some("com.monadial.canary.server.sms.SmsService")
   )
 
 lazy val serviceEmail = (project in file("service-email"))
@@ -308,7 +309,7 @@ lazy val serviceEmail = (project in file("service-email"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    assembly / mainClass := Some("tech.canaryapp.server.email.EmailService")
+    assembly / mainClass := Some("com.monadial.canary.server.email.EmailService")
   )
 
 lazy val serviceNone = (project in file("service-nonce"))
@@ -334,5 +335,5 @@ lazy val serviceNone = (project in file("service-nonce"))
       // Kamon
       "io.kamon" %% "kamon-bundle" % kamonVersion
     ),
-    assembly / mainClass := Some("tech.canaryapp.server.email.EmailService")
+    assembly / mainClass := Some("com.monadial.canary.server.email.EmailService")
   )

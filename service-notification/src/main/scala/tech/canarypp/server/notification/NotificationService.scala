@@ -1,9 +1,9 @@
 package tech.canarypp.server.notification
 
+import com.monadial.canary.server.service.Service
+import com.monadial.canary.server.service.config.Config
+import com.monadial.canary.server.service.model.ServiceName
 import monix.eval.Task
-import tech.canaryapp.server.service.Service
-import tech.canaryapp.server.service.config.Config
-import tech.canaryapp.server.service.model.ServiceName
 
 /**
  * @author Tomas Mihalicka <tomas@mihalicka.com>

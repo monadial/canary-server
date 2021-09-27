@@ -3,12 +3,12 @@
     <envs>
       <env name="CLUSTER_NAME" value="local" />
     </envs>
-    <option name="MAIN_CLASS_NAME" value="tech.canaryapp.server.crypto.CryptoService" />
+    <option name="MAIN_CLASS_NAME" value="com.monadial.canary.server.crypto.CryptoService" />
     <module name="service-crypto" />
     <option name="VM_PARAMETERS" value="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=9010 --add-opens java.base/java.util.concurrent=ALL-UNNAMED" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="tech.canaryapp.server.crypto.*" />
+        <option name="PATTERN" value="com.monadial.canary.server.crypto.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

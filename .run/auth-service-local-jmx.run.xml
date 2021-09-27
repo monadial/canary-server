@@ -6,12 +6,12 @@
       <env name="CLUSTER_NAME" value="local" />
       <env name="CONFIG" value="zookeeper://" />
     </envs>
-    <option name="MAIN_CLASS_NAME" value="tech.canaryapp.server.auth.AuthService" />
+    <option name="MAIN_CLASS_NAME" value="com.monadial.canary.server.auth.AuthService" />
     <module name="service-auth" />
     <option name="VM_PARAMETERS" value="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=9010 --add-opens java.base/java.util.concurrent=ALL-UNNAMED" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="tech.canaryapp.server.auth.*" />
+        <option name="PATTERN" value="com.monadial.canary.server.auth.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
