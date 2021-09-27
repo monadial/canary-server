@@ -3,11 +3,9 @@ package com.monadial.canary.server.nonce.actor.supervisor
 import akka.Done
 import akka.actor.typed.Terminated
 import akka.actor.typed.scaladsl.Behaviors
-import com.monadial.canary.server.nonce.actor.supervisor.SupervisorActor.Message
+import com.monadial.canary.server.nonce.actor.supervisor.SupervisorActor.{Message, Provider, Stop}
 import com.monadial.canary.server.util.reusable.actor.http.HttpServerActor
-import com.monadial.canary.server.util.reusable.actor.http.HttpServerActor.Stop
 import com.typesafe.scalalogging.LazyLogging
-import SupervisorActor.{Message, Provider, Stop}
 import com.monadial.canary.server.nonce.actor.ActorModule
 
 object SupervisorActorImpl extends LazyLogging {
@@ -21,7 +19,7 @@ object SupervisorActorImpl extends LazyLogging {
 
     Behaviors.receiveMessagePartial[Message] {
       case Stop(replyTo) =>
-        httpServerActor ! Stop
+        httpServerActor ! HttpServerActor.Stop
 
       Behaviors.receiveSignal {
         case (context, Terminated(ref)) =>

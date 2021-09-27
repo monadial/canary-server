@@ -140,7 +140,8 @@ lazy val serviceCrypto = (project in file("service-crypto"))
       "io.monix" %% "monix-eval" % monixVersion,
       "io.monix" %% "monix-execution" % monixVersion,
       // Kamon
-      "io.kamon" %% "kamon-bundle" % kamonVersion
+      "io.kamon" %% "kamon-bundle" % kamonVersion,
+      "io.kamon" %% "kamon-prometheus" % kamonVersion,
     ),
     assembly / mainClass := Some("com.monadial.canary.server.crypto.CryptoService")
   )
@@ -202,7 +203,8 @@ lazy val serviceRing = (project in file("service-ring"))
       "io.monix" %% "monix-eval" % monixVersion,
       "io.monix" %% "monix-execution" % monixVersion,
       // Kamon
-      "io.kamon" %% "kamon-bundle" % kamonVersion
+      "io.kamon" %% "kamon-bundle" % kamonVersion,
+      "io.kamon" %% "kamon-prometheus" % kamonVersion,
     ),
     assembly / mainClass := Some("com.monadial.canary.server.ring.RingService")
   )
@@ -229,7 +231,8 @@ lazy val serviceChannel = (project in file("service-channel"))
       "io.monix" %% "monix-eval" % monixVersion,
       "io.monix" %% "monix-execution" % monixVersion,
       // Kamon
-      "io.kamon" %% "kamon-bundle" % kamonVersion
+      "io.kamon" %% "kamon-bundle" % kamonVersion,
+      "io.kamon" %% "kamon-prometheus" % kamonVersion,
     ),
     assembly / mainClass := Some("com.monadial.canary.server.channel.ChannelService")
   )
@@ -255,7 +258,8 @@ lazy val serviceNotification = (project in file("service-notification"))
       "io.monix" %% "monix-eval" % monixVersion,
       "io.monix" %% "monix-execution" % monixVersion,
       // Kamon
-      "io.kamon" %% "kamon-bundle" % kamonVersion
+      "io.kamon" %% "kamon-bundle" % kamonVersion,
+      "io.kamon" %% "kamon-prometheus" % kamonVersion,
     ),
     assembly / mainClass := Some("com.monadial.canary.server.notification.NotificationService")
   )
@@ -281,7 +285,8 @@ lazy val serviceSms = (project in file("service-sms"))
       "io.monix" %% "monix-eval" % monixVersion,
       "io.monix" %% "monix-execution" % monixVersion,
       // Kamon
-      "io.kamon" %% "kamon-bundle" % kamonVersion
+      "io.kamon" %% "kamon-bundle" % kamonVersion,
+      "io.kamon" %% "kamon-prometheus" % kamonVersion,
     ),
     assembly / mainClass:= Some("com.monadial.canary.server.sms.SmsService")
   )
@@ -307,12 +312,13 @@ lazy val serviceEmail = (project in file("service-email"))
       "io.monix" %% "monix-eval" % monixVersion,
       "io.monix" %% "monix-execution" % monixVersion,
       // Kamon
-      "io.kamon" %% "kamon-bundle" % kamonVersion
+      "io.kamon" %% "kamon-bundle" % kamonVersion,
+      "io.kamon" %% "kamon-prometheus" % kamonVersion,
     ),
     assembly / mainClass := Some("com.monadial.canary.server.email.EmailService")
   )
 
-lazy val serviceNone = (project in file("service-nonce"))
+lazy val serviceNonce = (project in file("service-nonce"))
   .dependsOn(commonService, commonModel, commonUtil)
   .settings(commonSettings: _*)
   .settings(
@@ -333,7 +339,8 @@ lazy val serviceNone = (project in file("service-nonce"))
       "io.monix" %% "monix-eval" % monixVersion,
       "io.monix" %% "monix-execution" % monixVersion,
       // Kamon
-      "io.kamon" %% "kamon-bundle" % kamonVersion
+      "io.kamon" %% "kamon-bundle" % kamonVersion,
+      "io.kamon" %% "kamon-prometheus" % kamonVersion,
     ),
-    assembly / mainClass := Some("com.monadial.canary.server.email.EmailService")
+    assembly / mainClass := Some("com.monadial.canary.server.nonce.NonceService")
   )

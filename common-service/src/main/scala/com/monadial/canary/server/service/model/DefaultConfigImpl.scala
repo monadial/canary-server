@@ -2,7 +2,6 @@ package com.monadial.canary.server.service.model
 
 import com.monadial.canary.server.service.config.{Config, KafkaConfig}
 import com.typesafe.config.{ConfigFactory, Config => TConfig}
-import com.monadial.canary.server.service.config.Config
 
 import scala.jdk.CollectionConverters._
 import scala.util.Try
