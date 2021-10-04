@@ -45,7 +45,7 @@ object SupervisorActorImpl extends LazyLogging {
 
                 if (children.isEmpty) {
                   logger.info("Service supervisor shutdown completed.")
-                  replyTo ! Done
+                  replyTo ! Done.done()
                   Behaviors.same
                 } else {
                   logger.debug(

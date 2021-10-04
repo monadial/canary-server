@@ -2,23 +2,32 @@ package com.monadial.canary.server.nonce.actor.supervisor
 
 import akka.Done
 import akka.actor.typed.Terminated
+import akka.actor.typed.eventstream.EventStream.{Publish, Subscribe}
 import akka.actor.typed.scaladsl.Behaviors
 import com.monadial.canary.server.nonce.actor.supervisor.SupervisorActor.{Message, Provider, Stop}
-import com.monadial.canary.server.util.reusable.actor.http.HttpServerActor
+import com.monadial.canary.server.nonce.actor.http.HttpServerActor
+import com.monadial.canary.server.nonce.actor.nonce.NonceActor
 import com.typesafe.scalalogging.LazyLogging
-import com.monadial.canary.server.nonce.actor.ActorModule
 
-object SupervisorActorImpl extends LazyLogging {
+object SupervisorActorImpl {
 
   def createActor(
-      httpServiceActorProvider: ActorModule#HttpServiceProvider
+      nonceActorProvider: NonceActor.Provider,
+      httpActorProvider: HttpServerActor.Provider
   ): Provider = () => Behaviors.setup { context =>
+    // nonce actor
+    val nonceActor = context.spawn(nonceActorProvider(), "nonce")
+    context.watch(nonceActor)
+
     // http server
-    val httpServerActor = context.spawn(httpServiceActorProvider(), "http-server")
+    val httpServerActor = context.spawn(httpActorProvider(nonceActor), "http-server")
     context.watch(httpServerActor)
+
+
 
     Behaviors.receiveMessagePartial[Message] {
       case Stop(replyTo) =>
+        nonceActor ! NonceActor.Stop
         httpServerActor ! HttpServerActor.Stop
 
       Behaviors.receiveSignal {
@@ -26,11 +35,11 @@ object SupervisorActorImpl extends LazyLogging {
           val children = context.children.toList
 
         if (children.isEmpty) {
-          logger.info("Service supervisor shutdown completed.")
-          replyTo ! Done
+          context.log.info("Service supervisor shutdown completed.")
+          replyTo ! Done.done()
           Behaviors.same
         } else {
-          logger.debug(
+          context.log.debug(
             "Supervisor child ({}) terminated, {} child left.",
             ref.path.toStringWithoutAddress,
             children.length
@@ -40,7 +49,7 @@ object SupervisorActorImpl extends LazyLogging {
       }
     } receiveSignal {
       case (context, Terminated(ref)) =>
-        logger.error("Supervisor child {} terminated unexpectedly.", ref.path.toStringWithoutAddress)
+        context.log.error("Supervisor child {} terminated unexpectedly.", ref.path.toStringWithoutAddress)
         context.system.terminate()
         Behaviors.same
     }

@@ -45,8 +45,7 @@ trait Service extends LazyLogging {
     val cancelableFuture = rootConfig
       .map(c => DefaultConfigImpl(c, clusterName, instanceName, serviceName))
       .flatMap { config =>
-        logger.info(s"Starting Canary service ${serviceName.name} @ ${startTime.asDate().toString}.")
-        logger.info(s"Starting cluster service: ${serviceName.name}, member: " + instanceName.toString + ".")
+        println(ServiceBanner(instanceName).banner)
         val runService = start(config)
         val runKamonCollector = serviceMetricsCollector
           .start()

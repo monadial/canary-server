@@ -12,5 +12,6 @@ final case class InstanceName(
 ) {
   lazy val instanceUuid: UUID = UUID.randomUUID()
 
-  override def toString: String = s"${clusterName.name}-canary-server-${serviceName.name}-${startTime.asLong}-${instanceUuid.toString}"
+  // mcs = monadial canary server
+  override def toString: String = s"${clusterName.name}-mcs-${serviceName.name}-${startTime.asLong}-${instanceUuid.toString}"
 }

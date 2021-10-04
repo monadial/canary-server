@@ -1,14 +1,11 @@
 package com.monadial.canary.server.nonce.service.http
 
+import akka.actor.typed.ActorRef
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
-import com.monadial.canary.server.nonce.config.NonceHttpServiceConfig
-import com.monadial.canary.server.util.reusable.actor.http.service.HttpService
+import com.monadial.canary.server.nonce.actor.nonce.NonceActor
 
-import scala.concurrent.duration.FiniteDuration
+final case class NonceHttpService(private val nonceActor: ActorRef[NonceActor.Message]) extends HttpService {
 
-final class NonceHttpService(val config: NonceHttpServiceConfig) extends HttpService[NonceHttpServiceConfig] {
-  override val routes: Route =  get {
-    complete("Nonce Service: " + config.toString)
-  }
+  override def routes: Route = complete(nonceActor.path.address.toString)
 }

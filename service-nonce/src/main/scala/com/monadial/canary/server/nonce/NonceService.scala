@@ -13,7 +13,7 @@ import com.monadial.canary.server.nonce.actor.supervisor.SupervisorActor.Stop
 import com.monadial.canary.server.nonce.config.{NonceServiceConfig, NonceServiceConfigImpl}
 import com.monadial.canary.server.service.Service
 import com.monadial.canary.server.service.config.Config
-import com.monadial.canary.server.service.model.ServiceName
+import com.monadial.canary.server.service.model.{InstanceName, ServiceName}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContextExecutor
@@ -26,10 +26,10 @@ object NonceService extends Service {
     val nonceServiceConfig = NonceServiceConfigImpl(serviceConfig)
     Task
       .eval[ActorModule](new ActorModule {
-        override val config: NonceServiceConfig = nonceServiceConfig
+        override lazy val config: NonceServiceConfig = nonceServiceConfig
       })
       .bracket { module =>
-        Task.cancelable[Unit] { callaback =>
+        Task.cancelable[Unit] { callback =>
           lazy val actorSystem =
             ActorSystem(module.supervisorActorProvider(), clusterName.name, module.config.systemConfig.rootConfig)
 
@@ -44,7 +44,7 @@ object NonceService extends Service {
 
           actorSystem.whenTerminated
             .map(_ => ())
-            .onComplete(callaback.apply)
+            .onComplete(callback.apply)
 
           Task.eval(
             CoordinatedShutdown(actorSystem.toClassic)
