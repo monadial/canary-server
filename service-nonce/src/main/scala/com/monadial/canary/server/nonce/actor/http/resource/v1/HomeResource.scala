@@ -11,5 +11,5 @@ final class HomeResource extends Resource {
 }
 
 object HomeResource {
-  def apply(): HomeResource = new HomeResource()
+  def apply(): Route = new HomeResource().routes
 }

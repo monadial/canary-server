@@ -12,13 +12,10 @@ import com.monadial.canary.server.nonce.actor.http.HttpServerActor.HttpServerBin
 import com.monadial.canary.server.nonce.actor.http.HttpServerActor.Provider
 import com.monadial.canary.server.nonce.actor.http.HttpServerActor.Stop
 import com.monadial.canary.server.nonce.actor.http.HttpServerActor.Message
-import com.monadial.canary.server.nonce.actor.http.resource.Resource
 import com.monadial.canary.server.nonce.actor.http.resource.v1.HealthCheckResource
 import com.monadial.canary.server.nonce.actor.http.resource.v1.HomeResource
 import com.monadial.canary.server.nonce.actor.http.resource.v1.NewNonceResource
-import com.monadial.canary.server.nonce.config.NonceHttpServiceConfig
 import com.monadial.canary.server.nonce.config.NonceServiceConfig
-import com.monadial.canary.server.service.model.InstanceName
 import monix.eval.Task
 import monix.execution.Scheduler
 
@@ -42,10 +39,10 @@ object HttpServerActorImpl {
 
         lazy val routes: Route =
           pathSingleSlash {
-            HomeResource().routes
+            HomeResource()
           } ~ pathPrefix("v1") {
-            pathPrefix("new-nonce")(NewNonceResource(nonceActor).routes) ~
-              pathPrefix("new-nonce")(HealthCheckResource(serviceConfig.systemConfig.instanceName).routes)
+            pathPrefix("new-nonce")(NewNonceResource(nonceActor)) ~
+              pathPrefix("new-nonce")(HealthCheckResource(serviceConfig.systemConfig.instanceName))
           }
 
         val bindingTask = Task.fromFuture(

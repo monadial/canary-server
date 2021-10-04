@@ -10,5 +10,5 @@ final class HealthCheckResource(instanceName: InstanceName) extends Resource {
 }
 
 object HealthCheckResource {
-  def apply(instanceName: InstanceName): HealthCheckResource = new HealthCheckResource(instanceName)
+  def apply(instanceName: InstanceName): Route = new HealthCheckResource(instanceName).routes
 }

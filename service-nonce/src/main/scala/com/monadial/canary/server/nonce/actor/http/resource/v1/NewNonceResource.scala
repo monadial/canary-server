@@ -15,6 +15,6 @@ final class NewNonceResource(
 }
 
 object NewNonceResource {
-  def apply(nonceActor: ActorRef[NonceActor.Message]): NewNonceResource =
-    new NewNonceResource(nonceActor)
+  def apply(nonceActor: ActorRef[NonceActor.Message]): Route =
+    new NewNonceResource(nonceActor).routes
 }
